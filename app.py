@@ -465,11 +465,59 @@ def challenge():
     return jsonify(correct=True, already=already, me=out)
 
 
+@app.post("/api/admin/stats")
+def admin_stats():
+    """Painel do dono do site: atividade do banco (usuários, perguntas, respostas, votos)."""
+    admin_key = os.environ.get("ADMIN_KEY", "")
+    if not admin_key:
+        return err("Painel desativado. Defina a variável de ambiente ADMIN_KEY para habilitar.", 503)
+    key = str(js().get("key", ""))
+    if not key or not secrets.compare_digest(key, admin_key):
+        return err("Chave de acesso incorreta.", 401)
+    con = db()
+    counts = {
+        "users": con.execute("SELECT COUNT(*) c FROM users").fetchone()["c"],
+        "questions": con.execute("SELECT COUNT(*) c FROM questions").fetchone()["c"],
+        "answers": con.execute("SELECT COUNT(*) c FROM answers").fetchone()["c"],
+        "votes": con.execute("SELECT COUNT(*) c FROM votes").fetchone()["c"],
+    }
+    users = [{
+        "username": r["username"], "email": r["email"], "when": humanize(r["created_at"]),
+    } for r in con.execute(
+        "SELECT username,email,created_at FROM users ORDER BY created_at DESC LIMIT 15")]
+    questions = [{
+        "title": r["title"], "kind": r["kind"], "by": r["author"] or "—",
+        "votes": r["base_votes"] + r["nv"], "when": humanize(r["created_at"]),
+    } for r in con.execute(
+        "SELECT q.title,q.kind,q.base_votes,q.created_at,u.username author,"
+        "(SELECT COUNT(*) FROM votes v WHERE v.question_id=q.id) nv "
+        "FROM questions q LEFT JOIN users u ON u.id=q.author_id ORDER BY q.created_at DESC LIMIT 15")]
+    answers = [{
+        "by": r["username"], "title": r["title"], "text": r["text"],
+        "when": humanize(r["created_at"]),
+    } for r in con.execute(
+        "SELECT a.text,a.created_at,u.username,q.title FROM answers a "
+        "JOIN users u ON u.id=a.author_id JOIN questions q ON q.id=a.question_id "
+        "ORDER BY a.created_at DESC LIMIT 15")]
+    votes = [{
+        "by": r["username"], "title": r["title"], "when": humanize(r["created_at"]),
+    } for r in con.execute(
+        "SELECT q.title,v.created_at,u.username FROM votes v "
+        "JOIN users u ON u.id=v.user_id JOIN questions q ON q.id=v.question_id "
+        "ORDER BY v.created_at DESC LIMIT 15")]
+    return jsonify(counts=counts, users=users, questions=questions, answers=answers, votes=votes)
+
+
 # ------------------------------------------------------------ frontend
 
 @app.get("/")
 def home():
     return send_from_directory(FRONTEND, "index.html")
+
+
+@app.get("/admin")
+def admin():
+    return send_from_directory(FRONTEND, "admin.html")
 
 
 @app.get("/<path:fname>")

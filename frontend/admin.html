@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PyHub · Painel</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 26'%3E%3Crect x='1' y='1' width='15' height='15' rx='4' fill='%234b8bbe'/%3E%3Crect x='10' y='10' width='15' height='15' rx='4' fill='%23ffd43b'/%3E%3C/svg%3E">
+<style>
+:root{--bg:#0a1220;--sf:#111d30;--sf2:#182843;--ln:#223551;--tx:#e8eef8;--mu:#93a5bf;--bl:#5a9bd5;--yl:#ffd43b;--ok:#4fd18b;color-scheme:dark}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,sans-serif;padding:24px 16px}
+.wrap{max-width:900px;margin:0 auto}
+h1{font-size:24px;letter-spacing:-.02em;margin:0 0 4px}h1 b{color:var(--yl)}
+.sub{color:var(--mu);font-size:14px;margin:0 0 20px}
+.bar{display:flex;gap:8px;margin-bottom:20px}
+input{background:var(--sf);color:var(--tx);border:1px solid var(--ln);border-radius:10px;padding:11px 12px;font:15px system-ui;flex:1}
+button{background:var(--yl);color:#14202f;border:0;border-radius:10px;padding:11px 18px;font-weight:700;cursor:pointer;font-size:15px}
+button.ghost{background:var(--sf);color:var(--tx);border:1px solid var(--ln);font-weight:600}
+.err{color:#e5484d;font-size:14px;min-height:20px;margin-bottom:12px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:24px}
+.card{background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:14px;text-align:center}
+.card b{display:block;font-size:26px;font-family:monospace}
+.card span{color:var(--mu);font-size:13px}
+h2{font-size:16px;color:var(--bl);margin:26px 0 8px}
+table{width:100%;border-collapse:collapse;background:var(--sf);border:1px solid var(--ln);border-radius:12px;overflow:hidden;font-size:14px}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--ln)}
+th{color:var(--mu);font-size:12px;text-transform:uppercase;letter-spacing:.05em;background:var(--sf2)}
+tr:last-child td{border-bottom:0}
+td.mu,th.wh{color:var(--mu)}
+td .k{font:12px monospace;color:var(--bl);background:var(--sf2);padding:1px 7px;border-radius:5px}
+.tag{font:12px monospace;color:var(--mu)}
+.hint{color:var(--mu);font-size:13px;margin-top:24px;line-height:1.6}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Py<b>Hub</b> · Painel do dono</h1>
+<p class="sub">Atividade do site: usuários, perguntas, respostas e votos — direto do banco de dados.</p>
+<div class="bar">
+  <input id="key" type="password" placeholder="Chave de acesso (ADMIN_KEY)" autocomplete="off">
+  <button id="go">Ver dados</button>
+  <button id="rf" class="ghost" hidden>Atualizar</button>
+</div>
+<p class="err" id="e" role="alert"></p>
+
+<section id="data" hidden>
+  <div class="cards" id="cards"></div>
+  <h2>Perguntas mais recentes</h2><table id="tq"></table>
+  <h2>Novos usuários</h2><table id="tu"></table>
+  <h2>Últimas respostas</h2><table id="ta"></table>
+  <h2>Últimos votos</h2><table id="tv"></table>
+  <p class="hint">Esta página é secreta: só quem tiver a chave <b>ADMIN_KEY</b> (definida nas variáveis de ambiente) consegue ver. O link <b>/admin</b> fica marcado como "noindex" para não aparecer no Google.</p>
+</section>
+</div>
+<script>
+var $=function(i){return document.getElementById(i)};
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function tbl(el,head,rows){
+  if(!rows.length){el.innerHTML='<tr><td class="mu">Nada ainda.</td></tr>';return}
+  el.innerHTML='<tr>'+head.map(function(h){return '<th class="wh">'+h+'</th>'}).join('')+'</tr>'+
+    rows.map(function(r){return '<tr>'+r.map(function(c){return '<td>'+c+'</td>'}).join('')+'</tr>'}).join('');
+}
+function load(k){
+  $("e").textContent="";
+  return fetch("/api/admin/stats",{method:"POST",credentials:"same-origin",
+    headers:{"Content-Type":"application/json"},body:JSON.stringify({key:k})})
+  .then(function(r){return r.json().then(function(j){return{ok:r.ok,j:j}})})
+  .then(function(r){
+    if(!r.ok){$("e").textContent=r.j.error||"Não foi possível carregar.";return}
+    $("data").hidden=false;$("rf").hidden=false;
+    var c=r.j.counts;
+    $("cards").innerHTML=[["Usuários",c.users],["Perguntas",c.questions],["Respostas",c.answers],["Votos",c.votes]]
+      .map(function(x){return '<div class="card"><b>'+x[1]+'</b><span>'+x[0]+'</span></div>'}).join("");
+    tbl($("tq"),["Título","Tipo","Autor","Votos","Quando"],r.j.questions.map(function(q){
+      return ['<b>'+esc(q.title)+'</b>','<span class="k">'+esc(q.kind)+'</span>',esc(q.by),q.votes,q.when]}));
+    tbl($("tu"),["Usuário","E-mail","Entrou"],r.j.users.map(function(u){
+      return ['<b>'+esc(u.username)+'</b>',esc(u.email),u.when]}));
+    tbl($("ta"),["Autor","Em","Resposta","Quando"],r.j.answers.map(function(a){
+      return ['<b>'+esc(a.by)+'</b>',esc(a.title),esc(a.text),a.when]}));
+    tbl($("tv"),["Usuário","Votou em","Quando"],r.j.votes.map(function(v){
+      return ['<b>'+esc(v.by)+'</b>',esc(v.title),v.when]}));
+  },function(){$("e").textContent="Sem conexão com o servidor."});
+}
+$("go").addEventListener("click",function(){load($("key").value)});
+$("rf").addEventListener("click",function(){load($("key").value)});
+$("key").addEventListener("keydown",function(e){if(e.key==="Enter")load(this.value)});
+</script>
+</body>
+</html>
