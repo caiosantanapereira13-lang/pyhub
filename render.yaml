@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: pyhub
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --workers 1 --threads 8
+    envVars:
+      - key: PYHUB_HTTPS
+        value: "1"
+      - key: SECRET_KEY
+        generateValue: true

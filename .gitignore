@@ -1,0 +1,6 @@
+.venv/
+__pycache__/
+pyhub.db
+pyhub.db-wal
+pyhub.db-shm
+secret.key

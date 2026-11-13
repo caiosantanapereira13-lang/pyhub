@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PyHub – comunidade Python brasileira</title>
+<meta name="description" content="Comunidade brasileira de Python: tire dúvidas, encontre soluções para erros e rode código no navegador.">
+<meta name="theme-color" content="#0a1220">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 26'%3E%3Crect x='1' y='1' width='15' height='15' rx='4' fill='%234b8bbe'/%3E%3Crect x='10' y='10' width='15' height='15' rx='4' fill='%23ffd43b'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="logo"><svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><rect x="1" y="1" width="15" height="15" rx="4" fill="#4b8bbe"/><rect x="10" y="10" width="15" height="15" rx="4" fill="#ffd43b"/></svg><span>Py<b>Hub</b></span></div>
+  <div class="hr"><button class="who" id="who" hidden></button><button class="acc" id="acc">Entrar</button><button class="ic" id="theme" aria-label="Alternar tema claro e escuro">◐</button></div>
+</header>
+<h1>Seu erro em Python já foi <mark>resolvido</mark> por alguém aqui.</h1>
+<p class="sub">Comunidade brasileira para tirar dúvidas, achar soluções e aprender Python.</p>
+<div class="term">
+  <div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span>python main.py</span></div>
+  <pre class="tb"><span class="d">Traceback (most recent call last):</span>
+  File "main.py", line 3, in &lt;module&gt;
+<span class="e">KeyError: 'nome'</span>
+<span class="g">✓ resolvido por 3 pessoas no PyHub</span></pre>
+  <label class="pr"><span aria-hidden="true">&gt;&gt;&gt;</span><input id="q" type="search" placeholder="Cole aqui o seu erro, ex: KeyError" aria-label="Buscar erro ou pergunta" autocomplete="off"><kbd class="k" aria-hidden="true">/</kbd></label>
+</div>
+<section class="edw"><h2>Editor Python</h2><p>Escreva e organize seu código antes de perguntar à comunidade.</p>
+<div class="chl" id="chl"></div>
+<div class="edtop"><button class="run" id="rn">▶ Executar</button><button id="cp">Copiar</button><select id="ex" aria-label="Exemplos de código"><option value="">Exemplos…</option><option value="ola">Olá, mundo</option><option value="loop">Loop for</option><option value="funcao">Função</option><option value="lista">Lista</option><option value="input">Pedir um valor</option><option value="erro">Código com erro</option></select><button id="cl">Limpar</button><button class="ask" id="pq">Perguntar com este código</button></div>
+<div class="edbar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span>main.py</span><span class="rt" id="rt"></span></div>
+<div class="ed"><div class="gut" id="gut" aria-hidden="true">1</div><div class="cw"><pre class="hl" id="hl" aria-hidden="true"></pre><textarea class="ta" id="ta" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" aria-label="Editor de código Python"></textarea></div></div><pre class="out" id="out" role="status" aria-live="polite"></pre><div class="xp" id="xp" hidden></div></section>
+<h2 class="sec">Perguntas e soluções</h2>
+<div class="chips" id="chips" aria-label="Buscas populares"></div>
+<nav class="tabs" id="tabs" aria-label="Filtros"></nav>
+<main id="list"></main>
+<section class="how"><h2 class="sec">Como funciona</h2><ol class="steps"><li><b>01</b><strong>Cole o erro</strong><span>Busque a mensagem que apareceu no seu terminal.</span></li><li><b>02</b><strong>Veja a solução</strong><span>Respostas da comunidade, com exemplos de código.</span></li><li><b>03</b><strong>Pergunte e ajude</strong><span>Não achou? Pergunte com o seu código e ganhe pontos respondendo.</span></li></ol></section>
+<footer>PyHub · comunidade Python brasileira</footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+</div>
+<dialog id="dlg" aria-labelledby="dt"><div class="di">
+<div class="dh"><h2 id="dt">Entrar</h2><button class="ic" id="dx" aria-label="Fechar">✕</button></div>
+<div class="seg"><button id="sl" aria-pressed="true">Entrar</button><button id="ss" aria-pressed="false">Criar conta</button></div>
+<form id="af" novalidate>
+<label id="lu" hidden>Nome de usuário<input id="fu" autocomplete="username" maxlength="20"></label>
+<label>E-mail<input id="fe" type="email" autocomplete="email"></label>
+<label>Senha<input id="fp" type="password" autocomplete="current-password"></label>
+<p class="fm" id="fm" role="alert"></p>
+<button class="sub2" id="fs" type="submit">Entrar</button>
+</form>
+<p class="note">Sua conta fica salva no servidor e a sessão dura 30 dias neste navegador.</p>
+</div></dialog>
+<dialog id="qd" aria-labelledby="qt"><div class="di">
+<div class="dh"><h2 id="qt">Perguntar à comunidade</h2><button class="ic" id="qx" aria-label="Fechar">✕</button></div>
+<form id="qf" novalidate>
+<label>Título<input id="qti" maxlength="120" placeholder="Ex: Por que recebo KeyError ao ler o JSON?"></label>
+<label>Tags, separadas por vírgula<input id="qtg" placeholder="dict, json"></label>
+<div class="cap">Código que será enviado</div><pre class="qc" id="qc"></pre>
+<p class="fm" id="qm" role="alert"></p><button class="sub2" type="submit">Publicar pergunta</button>
+</form></div></dialog>
+<dialog id="pd" aria-labelledby="pt"><div class="di"><div class="dh"><h2 id="pt">Seu perfil</h2><button class="ic" id="px" aria-label="Fechar">✕</button></div><div id="pb"></div></div></dialog>
+<script src="/app.js" defer></script>
+</body>
+</html>
